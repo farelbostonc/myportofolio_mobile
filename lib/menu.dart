@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
 
-  final String npm = '2406000001';
-  final String nama = 'Burhan';
-  final String kelas = 'PBP A';
+  final String npm = '2506548490';
+  final String nama = 'Farel Boston Corinthians Nadeak';
+  final String kelas = 'PBP F';
 
   final List<ItemHomepage> items = [
     ItemHomepage('Lihat Proyek', Icons.folder),
@@ -36,6 +36,7 @@ class MyHomePage extends StatelessWidget {
                     child: InfoCard(title: 'NPM', content: npm),
                   ),
                   Expanded(
+                    flex: 2,
                     child: InfoCard(title: 'Name', content: nama),
                   ),
                   Expanded(
@@ -63,6 +64,7 @@ class MyHomePage extends StatelessWidget {
                       padding: const EdgeInsets.all(20),
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
+                      mainAxisExtent: 140,
                       crossAxisCount: 3,
                       shrinkWrap: true,
                       children: items.map((item) => ItemCard(item)).toList(),
@@ -88,17 +90,14 @@ class InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width / 3.5,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Text(content),
-            ],
-          ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: Column(
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text(content, textAlign: TextAlign.center),
+          ],
         ),
       ),
     );
