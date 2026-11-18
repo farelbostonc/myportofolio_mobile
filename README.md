@@ -2,7 +2,11 @@
 
 Implementasi Tutorial 08: Basic Flutter, PBP Gasal 2026/2027.
 
-Halaman utama menggunakan StatelessWidget, InfoCard untuk identitas pemilik portofolio, dan ItemCard untuk Lihat Proyek, Tambah Proyek, serta Logout. Setiap tombol menampilkan SnackBar; integrasi navigasi dan backend belum termasuk Tutorial 08.
+Halaman utama menggunakan StatelessWidget, InfoCard untuk identitas pemilik portofolio, dan ItemCard untuk Lihat Proyek, Tambah Proyek, serta Logout. Pada Tutorial 08, setiap tombol menampilkan SnackBar.
+
+## Tutorial 09
+
+Drawer menyediakan menu Home dan Add Project. Form juga bisa dibuka lewat kartu Tambah Proyek. Isi nama dan deskripsi, pilih kategori, lalu isi teknologi dan tautan bila diperlukan. Tombol Save menampilkan isian pada dialog. Tombol OK menutup dialog dan mereset form. Data belum disimpan ke database.
 
 ## Menjalankan aplikasi
 
