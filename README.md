@@ -41,3 +41,29 @@ flutter test
 #### Penggunaan AI
 
 Saya menggunakan bantuan AI untuk dalam mengerjakan Tugas 7 dan membagi pengerjaannya menjadi beberapa tahap. Saya mulai dari hasil Tutorial 08, lalu mengganti data profil contoh dengan nama, NPM, dan kelas saya. Setelah profil selesai, saya lanjut ke kartu aksi. Setiap kartu diberi warna berbeda, lalu saya menggunakan bantuan AI untuk menjalankan `flutter analyze` dan `flutter test` agar ketiga tombol tetap menampilkan SnackBar sesuai labelnya.
+
+### Tugas 8
+
+Saya menambahkan form **Tambah Pendidikan** yang bisa dibuka dari kartu di beranda atau lewat drawer. Setelah semua kolom terisi, tombol **Simpan** menampilkan ringkasan pendidikan dalam dialog.
+
+1. **Bagaimana navigasi form bekerja?**
+
+   Kartu **Tambah Pendidikan** memakai `Navigator.push()` untuk membuka form. Beranda tetap ada di bawahnya, jadi tombol Back bisa langsung membawa saya kembali. `pushReplacement()` mengganti halaman aktif, sedangkan `pop()` menutup halaman atau dialog paling atas. Saat **Home** dipilih dari drawer, aplikasi menutup drawer lalu kembali ke beranda dengan `popUntil()`. Kalau beranda sudah tergantikan, aplikasi membukanya lagi dengan `pushReplacementNamed('/')`.
+
+2. **Bagaimana tampilan antarhalaman tetap konsisten?**
+
+   Beranda dan form sama-sama memakai `Scaffold` untuk menyusun halaman, `AppBar` untuk judul, dan `LeftDrawer` untuk navigasi. Warna `AppBar` di kedua halaman diambil dari `colorScheme.primary`, jadi keduanya mengikuti tema portofolio yang sama.
+
+3. **Mengapa form disusun secara vertikal?**
+
+   Saya memakai `Column` supaya kolom bisa diisi berurutan dari judul sampai tahun selesai. `Padding` memberi jarak antarkolom agar pesan kesalahan mudah dibaca. Saat keyboard terbuka dan ruang layar menyempit, `SingleChildScrollView` memungkinkan pengguna menggulir sampai tombol **Simpan**.
+
+4. **Apa yang terjadi saat tombol Simpan ditekan?**
+
+   Melalui `GlobalKey<FormState>`, tombol **Simpan** memanggil `validate()` untuk menjalankan `validator` tiap kolom. Misalnya, judul berisi spasi akan ditolak karena hasil `trim()` kosong. Keyboard angka pada kolom tahun juga tetap memungkinkan pengguna membiarkannya kosong. Kalau semua isian valid, `form.save()` mengambil nilainya dan `showDialog()` menampilkan ringkasan.
+
+#### Penggunaan AI
+
+Saya menggunakan ChatGPT untuk membantu mengimplementasikan sebagian isi form dan navigasi, serta menulis dan menjalankan pengujian. Saya membagi pengerjaan bersama AI menjadi tiga tahap agar perubahan pada form, navigasi, dan pengujian bisa diperiksa lewat commit masing-masing.
+
+Contoh instruksi yang saya berikan: *“Coba pastikan udah bener dan aman termasuk end to end nya.”* Dari pengujian tersebut, AI menemukan bahwa `SnackBar` bisa menutupi tombol **Simpan** ketika keyboard terbuka. Masalah itu tidak terlihat dari `flutter analyze`. Setelah perilaku kartu **Tambah Pendidikan** diperbaiki, kelima tes Flutter lulus dan alur dari beranda sampai ringkasan berhasil diuji pada build web di Chrome.
