@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:myportofolio_mobile/screens/project_form.dart';
 
 class ItemHomepage {
-  const ItemHomepage(
-    this.name,
-    this.icon,
-    this.color, {
-    this.opensProjectForm = false,
-  });
+  const ItemHomepage(this.name, this.icon, this.color, {this.pageBuilder});
 
   final String name;
   final IconData icon;
   final Color color;
-  final bool opensProjectForm;
+  final WidgetBuilder? pageBuilder;
 }
 
 class ItemCard extends StatelessWidget {
@@ -35,10 +29,10 @@ class ItemCard extends StatelessWidget {
                 content: Text('Kamu telah menekan tombol ${item.name}!'),
               ),
             );
-          if (item.opensProjectForm) {
-            Navigator.of(context).push<void>(
-              MaterialPageRoute(builder: (_) => const ProjectFormPage()),
-            );
+          final builder = item.pageBuilder;
+          if (builder != null) {
+            Navigator.of(context)
+                .push<void>(MaterialPageRoute(builder: builder));
           }
         },
         child: Padding(

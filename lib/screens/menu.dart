@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myportofolio_mobile/screens/education_form.dart';
+import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
 
@@ -9,13 +11,23 @@ class MyHomePage extends StatelessWidget {
   final String nama = 'Farel Boston Corinthians Nadeak';
   final String kelas = 'PBP F';
 
+  static Widget _projectForm(BuildContext context) => const ProjectFormPage();
+  static Widget _educationForm(BuildContext context) =>
+      const EducationFormPage();
+
   final List<ItemHomepage> items = const [
     ItemHomepage('Lihat Proyek', Icons.folder, Color(0xFF1565C0)),
     ItemHomepage(
       'Tambah Proyek',
       Icons.add_circle,
       Color(0xFF2E7D32),
-      opensProjectForm: true,
+      pageBuilder: _projectForm,
+    ),
+    ItemHomepage(
+      'Tambah Pendidikan',
+      Icons.school_outlined,
+      Color(0xFF563D82),
+      pageBuilder: _educationForm,
     ),
     ItemHomepage('Logout', Icons.logout, Color(0xFFC62828)),
   ];

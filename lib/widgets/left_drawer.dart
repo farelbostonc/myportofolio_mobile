@@ -63,6 +63,12 @@ class LeftDrawer extends StatelessWidget {
             selected: currentRoute == '/add-project',
             onTap: () => _openRoute(context, '/add-project'),
           ),
+          ListTile(
+            leading: const Icon(Icons.school_outlined),
+            title: const Text('Tambah Pendidikan'),
+            selected: currentRoute == '/add-education',
+            onTap: () => _openRoute(context, '/add-education'),
+          ),
         ],
       ),
     );
