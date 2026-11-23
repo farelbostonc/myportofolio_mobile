@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
 class ItemHomepage {
-  const ItemHomepage(this.name, this.icon, this.color, {this.pageBuilder});
+  const ItemHomepage(
+    this.name,
+    this.icon,
+    this.color, {
+    this.pageBuilder,
+    this.showTapMessage = true,
+  });
 
   final String name;
   final IconData icon;
   final Color color;
   final WidgetBuilder? pageBuilder;
+  final bool showTapMessage;
 }
 
 class ItemCard extends StatelessWidget {
@@ -22,13 +29,15 @@ class ItemCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
+          final messenger = ScaffoldMessenger.of(context);
+          messenger.removeCurrentSnackBar();
+          if (item.showTapMessage) {
+            messenger.showSnackBar(
               SnackBar(
                 content: Text('Kamu telah menekan tombol ${item.name}!'),
               ),
             );
+          }
           final builder = item.pageBuilder;
           if (builder != null) {
             Navigator.of(context)

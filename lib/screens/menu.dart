@@ -28,6 +28,7 @@ class MyHomePage extends StatelessWidget {
       Icons.school_outlined,
       Color(0xFF563D82),
       pageBuilder: _educationForm,
+      showTapMessage: false,
     ),
     ItemHomepage('Logout', Icons.logout, Color(0xFFC62828)),
   ];
