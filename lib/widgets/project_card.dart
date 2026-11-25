@@ -1,3 +1,9 @@
+import 'package:provider/provider.dart';
+
+import '../services/api_client.dart';
+import '../services/auth_state.dart';
+import 'auth_guard.dart';
+
 import 'package:flutter/material.dart';
 
 class ItemHomepage {
@@ -7,6 +13,7 @@ class ItemHomepage {
     this.color, {
     this.pageBuilder,
     this.showTapMessage = true,
+    this.requiresLogin = false,
   });
 
   final String name;
@@ -14,6 +21,7 @@ class ItemHomepage {
   final Color color;
   final WidgetBuilder? pageBuilder;
   final bool showTapMessage;
+  final bool requiresLogin;
 }
 
 class ItemCard extends StatelessWidget {
@@ -28,9 +36,28 @@ class ItemCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () {
+        onTap: () async {
           final messenger = ScaffoldMessenger.of(context);
           messenger.removeCurrentSnackBar();
+          if (item.name == 'Logout') {
+            try {
+              await context.read<AuthState>().logout();
+              if (context.mounted) {
+                messenger.showSnackBar(
+                  const SnackBar(content: Text('Sesi lokal berakhir.')),
+                );
+              }
+            } on ApiException catch (error) {
+              if (context.mounted) {
+                messenger.showSnackBar(SnackBar(content: Text(error.message)));
+              }
+            }
+            return;
+          }
+          if (item.requiresLogin &&
+              (!await ensureLoggedIn(context) || !context.mounted)) {
+            return;
+          }
           if (item.showTapMessage) {
             messenger.showSnackBar(
               SnackBar(

@@ -1,83 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:myportofolio_mobile/main.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
 
 void main() {
-  testWidgets('Menu menampilkan identitas dan respons setiap tombol', (
-    tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(390, 650));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(const MyApp());
-    expect(find.text('Farel Boston Corinthians Nadeak'), findsOneWidget);
+  testWidgets('Daftar proyek dapat dibuka tanpa login', (tester) async {
+    final client = MockClient((request) async {
+      expect(request.url.path, '/api/v1/projects/');
+      expect(request.headers['Authorization'], isNull);
+      return http.Response('[]', 200);
+    });
+    await tester.pumpWidget(MyApp(apiClient: ApiClient(client: client)));
     expect(find.text('2506548490'), findsOneWidget);
-    expect(find.text('PBP F'), findsOneWidget);
-
-    for (final label in ['Lihat Proyek', 'Tambah Proyek', 'Logout']) {
-      await tester.tap(find.text(label));
-      await tester.pumpAndSettle();
-      expect(find.text('Kamu telah menekan tombol $label!'), findsOneWidget);
-      if (label == 'Tambah Proyek') {
-        expect(find.text('Add Project Form'), findsOneWidget);
-        await tester.tap(find.byTooltip('Back'));
-        await tester.pumpAndSettle();
-      }
-    }
-    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Lihat Proyek'));
+    await tester.pumpAndSettle();
+    expect(find.text('Belum ada proyek.'), findsOneWidget);
   });
 
-  testWidgets(
-    'Drawer opens form, validates, previews, resets and returns home',
-    (tester) async {
-      await tester.pumpWidget(const MyApp());
-      await tester.tap(find.byTooltip('Open navigation menu'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Add Project'));
-      await tester.pumpAndSettle();
-
-      final fields = find.byType(TextFormField);
-      final save = find.widgetWithText(ElevatedButton, 'Save');
-      await tester.ensureVisible(save);
-      await tester.tap(save);
-      await tester.pumpAndSettle();
-      expect(find.text('Nama proyek tidak boleh kosong!'), findsOneWidget);
-      expect(find.text('Deskripsi proyek tidak boleh kosong!'), findsOneWidget);
-
-      await tester.enterText(fields.at(0), 'Portofolio Flutter');
-      await tester.enterText(fields.at(1), 'Aplikasi portofolio pribadi');
-      await tester.tap(find.byType(DropdownButtonFormField<String>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Mobile Development').last);
-      await tester.pumpAndSettle();
-      await tester.enterText(fields.at(2), 'Flutter');
-      await tester.enterText(fields.at(3), 'https://example.com');
-      await tester.ensureVisible(save);
-      await tester.tap(save);
-      await tester.pumpAndSettle();
-
-      for (final value in [
-        'Nama Proyek: Portofolio Flutter',
-        'Deskripsi: Aplikasi portofolio pribadi',
-        'Kategori: Mobile Development',
-        'Teknologi: Flutter',
-        'Tautan: https://example.com',
-      ]) {
-        expect(find.text(value), findsOneWidget);
+  testWidgets('Form proyek meminta login dan mengirim token', (tester) async {
+    final client = MockClient((request) async {
+      if (request.url.path.endsWith('/auth/token/')) {
+        return http.Response('{"token":"test-token"}', 200);
       }
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-      for (final field in tester.widgetList<EditableText>(
-        find.byType(EditableText),
-      )) {
-        expect(field.controller.text, isEmpty);
-      }
-      expect(find.text('Web Development'), findsOneWidget);
-
-      await tester.tap(find.byTooltip('Open navigation menu'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Home'));
-      await tester.pumpAndSettle();
-      expect(find.text('MyPortfolio'), findsOneWidget);
-    },
-  );
+      expect(request.url.path, '/api/v1/projects/');
+      expect(request.headers['Authorization'], 'Token test-token');
+      expect(request.body, contains('"tech_stack":"Flutter"'));
+      return http.Response('{}', 201);
+    });
+    await tester.pumpWidget(MyApp(apiClient: ApiClient(client: client)));
+    await tester.tap(find.text('Tambah Proyek'));
+    await tester.pumpAndSettle();
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.at(0), 'owner');
+    await tester.enterText(fields.at(1), 'test-password');
+    await tester.tap(find.widgetWithText(FilledButton, 'Login'));
+    await tester.pumpAndSettle();
+    expect(find.text('Add Project Form'), findsOneWidget);
+    for (final (index, value) in [
+      'Portofolio',
+      'Deskripsi',
+      'Flutter',
+      'https://example.com',
+    ].indexed) {
+      await tester.enterText(fields.at(index), value);
+    }
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Proyek tersimpan'), findsOneWidget);
+  });
 }

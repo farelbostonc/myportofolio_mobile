@@ -1,3 +1,9 @@
+import 'package:provider/provider.dart';
+
+import '../services/api_client.dart';
+import '../services/auth_state.dart';
+import 'auth_guard.dart';
+
 import 'package:flutter/material.dart';
 
 class LeftDrawer extends StatelessWidget {
@@ -19,6 +25,7 @@ class LeftDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthState>();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -61,7 +68,37 @@ class LeftDrawer extends StatelessWidget {
             leading: const Icon(Icons.add_circle_outline),
             title: const Text('Add Project'),
             selected: currentRoute == '/add-project',
-            onTap: () => _openRoute(context, '/add-project'),
+            onTap: () async {
+              if (await ensureLoggedIn(context) && context.mounted) {
+                _openRoute(context, '/add-project');
+              }
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.list_outlined),
+            title: const Text('Lihat Proyek'),
+            onTap: () => _openRoute(context, '/projects'),
+          ),
+          ListTile(
+            leading: Icon(auth.isLoggedIn ? Icons.logout : Icons.login),
+            title: Text(auth.isLoggedIn ? 'Logout' : 'Login'),
+            onTap: () async {
+              if (!auth.isLoggedIn) {
+                if (await ensureLoggedIn(context) && context.mounted) {
+                  Navigator.pop(context);
+                }
+                return;
+              }
+              try {
+                await auth.logout();
+              } on ApiException catch (error) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(error.message)));
+                }
+              }
+              if (context.mounted) Navigator.pop(context);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.school_outlined),
